@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Absent Students</title>
+    <style>
+        body { font-family: Arial; background:#f4f6f9; text-align:center; }
+        .box { width:50%; margin:40px auto; background:white; padding:20px; border-radius:6px; }
+        li { color:#e74c3c; font-weight:bold; }
+        button { padding:10px 22px; margin:10px; border:none; border-radius:5px; color:white; cursor:pointer; }
+        .send { background:#27ae60; }
+        .print { background:#2980b9; }
+    </style>
+</head>
+<body>
+
+<div class="box">    <div align=right> <p><b>Date:</b> {{ date }}</p></div>
+<div align=left>
+    <h3>To,<br>Principal<br>G-NTTF</h3>    
+
+
+
+    <h3>Respected Sir,</h3>
+    <p>The following trainees are absent today</p>
+</div>
+<div align=left>
+    {% if absent_students %}
+        <ul>
+            {% for s in absent_students %}
+                <li>{{ s }}</li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p style="color:green;">All students are present 🎉</p>
+    {% endif %}
+</div>
+    <button class="send" onclick="sendMail()">Send</button>
+    <button class="print" onclick="window.print()">Print</button>
+</div>
+
+<script>
+function sendMail() {
+    fetch("/send_mail", {
+        method: "POST",
+        headers: {"Content-Type":"application/json"},
+        body: JSON.stringify({date: "{{ date }}"})
+    })
+    .then(res => res.json())
+    .then(data => alert(data.message));
+}
+</script>
+
+</body>
+</html>

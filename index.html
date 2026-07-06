@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Student Attendance</title>
+    <style>
+        body { font-family: Arial; background:#f4f6f9; }
+        button { padding:6px 15px; margin:4px; border:none; border-radius:4px; color:white; cursor:pointer; }
+        .present { background:#27ae60; }
+        .absent { background:#e74c3c; }
+        .selected { background:#f1c40f; color:black; }
+        .submit-btn { background:#2980b9; padding:10px 25px; font-size:16px; }
+    </style>
+</head>
+<body>
+
+<h2 align="center">Student Attendance</h2>
+
+<div align="center">
+    <input type="date" id="date">
+</div>
+
+<table border="1" align="center" cellpadding="10" style="margin-top:20px;">
+<tr>
+    <th>Student ID</th>
+    <th>Attendance</th>
+</tr>
+
+<script>
+const students = [
+"G-NTTF0824001","G-NTTF0824002","G-NTTF0824003","G-NTTF0824004",
+"G-NTTF0824005","G-NTTF0824006","G-NTTF0824007","G-NTTF0824008",
+"G-NTTF0824009","G-NTTF0824010","G-NTTF0824011","G-NTTF0824012",
+"G-NTTF0824013","G-NTTF0824014","G-NTTF0824015","G-NTTF0824016",
+"G-NTTF0824017","G-NTTF0824018","G-NTTF0824019","G-NTTF0824020",
+"G-NTTF0824021","G-NTTF0824022","G-NTTF0824023","G-NTTF0824024",
+"G-NTTF0824025","G-NTTF0824026","G-NTTF0824027"
+];
+
+let attendance = {};
+students.forEach(s => attendance[s] = "Present");
+
+function selectStatus(id, status, btn) {
+    attendance[id] = status;
+    btn.parentElement.querySelectorAll("button").forEach(b => b.classList.remove("selected"));
+    btn.classList.add("selected");
+}
+
+students.forEach(s => {
+    document.write(`
+    <tr>
+        <td>${s}</td>
+        <td>
+            <button class="present selected" onclick="selectStatus('${s}','Present',this)">Present</button>
+            <button class="absent" onclick="selectStatus('${s}','Absent',this)">Absent</button>
+        </td>
+    </tr>
+    `);
+});
+
+function submitAttendance() {
+    let date = document.getElementById("date").value;
+    if (!date) {
+        alert("Select Date");
+        return;
+    }
+
+    fetch("/submit", {
+        method: "POST",
+        headers: {"Content-Type":"application/json"},
+        body: JSON.stringify({date, attendance})
+    })
+    .then(res => res.json())
+    .then(data => {
+        alert(data.message);
+        window.location.href = "/absent_letter?date=" + date;
+    });
+}
+</script>
+</table>
+
+<div align="center">
+    <button class="submit-btn" onclick="submitAttendance()">Submit</button>
+</div>
+
+</body>
+</html>
